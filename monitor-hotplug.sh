@@ -31,20 +31,20 @@ then
 	  notify-send "Updating screen layout"
   fi
 else
-
-	# Don't trigger this script to often
-	if [ -f "/tmp/hotplug.lock" ]
-	then
-		LAST=$( cat /tmp/hotplug.lock )
-	fi
-
-	if [ $MINUTE -eq $LAST ]
-	then
-		echo $( date +%H:%M:%S ) "--" "already fired this minute, exit" >> /tmp/udev-debug.log
-		exit 0
-	else
-		echo $MINUTE > /tmp/hotplug.lock
-	fi
+  # Don't trigger this script to often
+  # Udev seems to refire when xrandr disables/enables screens and if screens come back from hibernation
+  if [ -f "/tmp/hotplug.lock" ]
+  then
+    LAST=$( cat /tmp/hotplug.lock )
+  fi
+  
+  if [ $MINUTE -eq $LAST ]
+  then
+    echo $( date +%H:%M:%S ) "--" "already fired this minute, exit" >> /tmp/udev-debug.log
+    exit 0
+  else
+    echo $MINUTE > /tmp/hotplug.lock
+  fi
 fi
 
 # inspired by /etc/acpd/lid.sh and the function it sources
@@ -61,7 +61,6 @@ DEVICES=$(find /sys/class/drm/*/status)
 # Iterates over the results of 'find' in DEVICES
 while read l
 do
-
   dir=$(dirname $l);
   status=$(cat $l);
   dev=$(echo $dir | cut -d\- -f 2-);
@@ -78,7 +77,6 @@ do
   then
     echo $( date +%H:%M:%S ) "--" $dev "connected" >> /tmp/udev-debug.log
     declare $dev="yes";
-
   fi
 done <<< "$DEVICES"
 
@@ -112,13 +110,12 @@ fi
 
 if [ $USER == $TTYUSER ]
 then
-	echo "Xft.dpi: 84" > /home/${TTYUSER}/.Xresources
+  echo "Xft.dpi: 84" > /home/${TTYUSER}/.Xresources
 else
-	su ${TTYUSER} -c "echo 'Xft.dpi: 84' > /home/${TTYUSER}/.Xresources"
+  su ${TTYUSER} -c "echo 'Xft.dpi: 84' > /home/${TTYUSER}/.Xresources"
 fi 
 
 echo "Xft.dpi: 84" | xrdb -load -
-
 
 
 
@@ -156,6 +153,7 @@ then
 	  xrandr --output HDMI-1 --auto --noprimary --output eDP-1 --auto --left-of HDMI-1 --primary
   fi
 elif [ ! -z "$eDP1" -a -z "$HDMI1" ]; then
+  # If HDMI is not and internal display is present
   echo $( date +%H:%M:%S ) "--" "Reducing desktop to internal screen" >> /tmp/udev-debug.log
   xrandr --output eDP-1 --auto --primary --output HDMI-1 --off
   
