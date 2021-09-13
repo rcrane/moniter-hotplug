@@ -10,7 +10,13 @@
 # 4) Check file flags/permissions: +x 
 
 # Some parts have been copied from stack overflow and other pages.
-# This expects an X window system with xrandr being installed.
+# This script expects an X window system with xrandr being installed.
+
+# If the cable is plugged in or detached, root (udev) calls this script.
+# Parameter -f allows normal users to trigger screen updates (including software restart, see bottom)
+# Restarting software is particularely useful when dpi settings need to be adjusted, e.g. 1K -> 4K.
+# Dpi adjustments requires the desktop software to be restarted in order to take effect.
+# This script tries to restart some software at the bottom.
 
 MINUTE=$( date +%M )
 LAST=0
@@ -19,16 +25,13 @@ TTYUSER=($(who | grep tty))
 # TTYUSER is actually an array with username at location 0
 
 
-# If the cable is plugged in or detached, root (udev) calls this script.
-# Parameter -f allows normal users to trigger screen updates (including software restart, see bottom)
-
 if [ "$1" == "-f" ]
 then
   echo $( date +%H:%M:%S ) "--" "enforcing screen re-setup" >> /tmp/udev-debug.log
   echo $MINUTE > /tmp/hotplug.lock
   if [ $USER == $TTYUSER ]
   then
-	  notify-send "Updating screen layout"
+    notify-send "Updating screen layout"
   fi
 else
   # Don't trigger this script to often
