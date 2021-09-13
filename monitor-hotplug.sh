@@ -14,7 +14,7 @@
 
 # If the cable is plugged in or detached, root (udev) calls this script.
 # Parameter -f allows normal users to trigger screen updates (including software restart, see bottom)
-# Restarting software is particularely useful when dpi settings need to be adjusted, e.g. 1K -> 4K.
+# Restarting software is particularly useful when dpi settings need to be adjusted, e.g. 1K -> 4K.
 # Dpi adjustments requires the desktop software to be restarted in order to take effect.
 # This script tries to restart some software at the bottom.
 
