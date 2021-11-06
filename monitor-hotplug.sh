@@ -201,6 +201,7 @@ then
 	fi
 	
 	killall firefox 
+	pgrep -f /usr/lib/firefox | xargs kill
 	retVal=$?
 	if [ $retVal -eq 0 ]; then
     	firefox &
